@@ -1,9 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
-
 const cors = require("cors");
-
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -19,10 +17,26 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
+// Cấu hình danh sách các URL được phép truy cập server
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "http://localhost:3000"
+].filter(Boolean); // Loại bỏ các giá trị undefined nếu chưa cấu hình biến môi trường
+
+// 1. Cấu hình CORS cho Socket.io
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: function (origin, callback) {
+      // Cho phép nếu không có origin (như Postman/Mobile) hoặc thuộc danh sách allowedOrigins
+      if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.includes("onrender.com")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Bị chặn bởi Socket CORS"));
+      }
+    },
     methods: ["GET", "POST"],
+    credentials: true // Bắt buộc nếu frontend có truyền cookie/token authen
   },
 });
 
@@ -56,7 +70,17 @@ io.on("connection", (socket) => {
 app.set("io", io);
 app.set("onlineUsers", onlineUsers);
 
-app.use(cors());
+// 2. Cấu hình CORS cho Express API (Thay thế cho app.use(cors()) cũ)
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.includes("onrender.com")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Bị chặn bởi Express CORS"));
+    }
+  },
+  credentials: true
+}));
 
 app.use(express.json());
 
