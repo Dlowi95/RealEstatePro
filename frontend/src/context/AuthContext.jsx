@@ -47,7 +47,7 @@ export function AuthProvider({ children }) {
         const avatar = clerkUser?.imageUrl || "";
 
         const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/auth/sync`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/auth/sync`,
           {
             email,
             fullName,
@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
     }
 
     return axios.create({
-      baseURL: import.meta.env.VITE_API_URL,
+      baseURL: import.meta.env.VITE_API_BASE_URL,
       headers: { Authorization: `Bearer ${token}` },
     });
   };
