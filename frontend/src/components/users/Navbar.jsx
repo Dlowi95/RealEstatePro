@@ -749,6 +749,7 @@ const Navbar = () => {
                                   w="full"
                                   size="md"
                                   _hover={{ bg: "#CC5200" }}
+                                  onClick={() => setIsDrawerOpen(false)}
                                 >
                                   Đăng nhập / Đăng ký
                                 </Button>
