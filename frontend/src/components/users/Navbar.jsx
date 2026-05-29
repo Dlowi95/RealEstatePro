@@ -51,6 +51,8 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileNoti, setShowMobileNoti] = useState(false);
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   useEffect(() => {
@@ -405,7 +407,11 @@ const Navbar = () => {
             </SignedOut>
 
             <Box display={{ base: "block", md: "none" }}>
-              <Drawer.Root alternativeTrigger={true}>
+              <Drawer.Root
+                open={isDrawerOpen}
+                onOpenChange={(e) => setIsDrawerOpen(e.open)} // Đồng bộ trạng thái đóng mở của Chakra v3
+                alternativeTrigger={true}
+              >
                 <Drawer.Trigger asChild>
                   <IconButton
                     variant="ghost"
