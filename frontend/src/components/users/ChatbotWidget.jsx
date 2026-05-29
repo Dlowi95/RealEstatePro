@@ -13,6 +13,9 @@ import { LuMessageSquare, LuX, LuSend } from "react-icons/lu";
 import axios from "axios";
 import { useAuthContext } from "../../context/AuthContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+
 const ChatbotWidget = () => {
   const { user: dbUser } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
@@ -64,13 +67,13 @@ const ChatbotWidget = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/ai/chat-assistant",
-        {
-          message: userMessage,
-          history: currentMessages,
-        },
-      );
+  const response = await axios.post(
+    `${API_BASE_URL}/api/ai/chat-assistant`, // <--- Thay đổi ở dòng này
+    {
+      message: userMessage,
+      history: currentMessages,
+    },
+  );
 
       if (response.data.success) {
         setMessages([
